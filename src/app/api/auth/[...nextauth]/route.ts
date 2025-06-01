@@ -1,15 +1,17 @@
-```ts
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 // Import other providers like Google, GitHub etc. if you plan to use them
 // import GoogleProvider from "next-auth/providers/google";
 
-// If using Prisma Adapter
+// --- FOR PRODUCTION: UNCOMMENT AND CONFIGURE PRISMA ADAPTER ---
 // import { PrismaAdapter } from "@next-auth/prisma-adapter";
-// import prisma from "@/lib/prisma"; // Your prisma client instance
+// import { PrismaClient } from "@prisma/client"; // Or your specific prisma client path
+// const prisma = new PrismaClient(); // Or your specific prisma client instance
+// import bcrypt from 'bcryptjs'; // You'll need bcryptjs for password hashing
 
 export const authOptions: NextAuthOptions = {
-  // adapter: PrismaAdapter(prisma), // Uncomment if using Prisma Adapter
+  // --- FOR PRODUCTION: UNCOMMENT AND CONFIGURE PRISMA ADAPTER ---
+  // adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -17,35 +19,35 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email", placeholder: "jsmith@example.com" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials, req) {
-        // Add your own authentication logic here.
-        // This is just a placeholder.
-        // You'll need to query your database to verify the user.
-        // Example:
-        // const user = await prisma.user.findUnique({ where: { email: credentials?.email } });
-        // if (user && credentials?.password && (await bcrypt.compare(credentials.password, user.password))) {
-        //   return { id: user.id, name: user.name, email: user.email, image: user.image };
-        // }
-        
-        // For now, let's return a mock user for testing if email is provided
-        if (credentials?.email) {
-          return { id: "1", name: "Test User", email: credentials.email, image: null };
+      async authorize(credentials, req): Promise<NextAuthUser | null> {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
         }
-        return null; // Return null if user data could not be retrieved
+        // --- THIS IS THE CORE LOGIC YOU NEED TO IMPLEMENT ---
+        // Replace with actual database lookup and password comparison
+        console.log("Mock authorize called with email:", credentials.email); // For debugging
+        // For now, let's return a mock user for testing if email is provided
+        // DO NOT USE THIS IN PRODUCTION.
+        return {
+          id: "mockUserId-" + Math.random().toString(36).substring(7),
+          name: "Mock User",
+          email: credentials.email,
+          image: null,
+        };
       }
     }),
-    // Example Google Provider (get client ID and secret from Google Cloud Console)
+    // Example Google Provider
     // GoogleProvider({
     //   clientId: process.env.GOOGLE_CLIENT_ID!,
     //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     // }),
   ],
   session: {
-    strategy: "jwt", // Use JWT for session strategy
+    strategy: "jwt",
   },
   pages: {
-    signIn: '/', // Redirect to landing page for sign-in
-    // error: '/auth/error', // Custom error page
+    signIn: '/',
+    // error: '/auth/error',
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -55,15 +57,16 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (session.user && token.id) {
         session.user.id = token.id as string;
       }
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET, // Ensure this is set in your .env.local and Vercel
+  secret: process.env.NEXTAUTH_SECRET,
+  // debug: process.env.NODE_ENV === 'development', // Optional: for more logs
 };
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };
+export { handler as GET, handler as POST }; // This should be the VERY LAST line.
