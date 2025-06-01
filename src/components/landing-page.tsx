@@ -4,13 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Zap, 
-  Image as ImageIcon, 
-  Music, 
-  Video, 
-  Code, 
-  MessageSquare, 
+import {
+  Zap,
+  Image as ImageIcon,
+  Music,
+  Video,
+  Code,
+  MessageSquare,
   Sparkles,
   Check,
   ArrowRight,
@@ -18,14 +18,14 @@ import {
 } from "lucide-react";
 
 export function LandingPage() {
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false); // This state isn't used yet, but can be for a demo video modal
 
   const features = [
     {
       icon: 
 
 MessageSquare
-, title: "AI Chatbot Interface", description: "Natural conversation with unlimited AI capabilities" }, { icon:
+, // Added text color for visibility title: "AI Chatbot Interface", description: "Natural conversation with unlimited AI capabilities" }, { icon:
 
 
 ImageIcon
@@ -47,7 +47,7 @@ Code
 Sparkles
 , title: "Unlimited Access", description: "No restrictions on content or generation types" } ];
 
-const pricingFeatures = [ "Unlimited AI generations", "All media types supported", "Priority processing", "Advanced AI models", "API access", "24/7 support", "Commercial usage rights", "Custom model training" ];
+const pricingFeatures = [ "Unlimited AI generations", "All media types supported", "Priority processing", "Advanced AI models", "API access", "24/7 support", "Commercial usage rights", "Custom model training (soon)" ];
 
 return (
 
