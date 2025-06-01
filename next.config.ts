@@ -2,11 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  experimental: {
-    serverComponentsExternalPackages: ["@prisma/client"],
-  },
+  serverExternalPackages: ["@prisma/client"], // Corrected from experimental.serverComponentsExternalPackages
   images: {
-    domains: ["oaidalleapiprodscus.blob.core.windows.net"],
+    remotePatterns: [ // Use remotePatterns for security
+      {
+        protocol: 'https',
+        hostname: 'oaidalleapiprodscus.blob.core.windows.net',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 };
 
