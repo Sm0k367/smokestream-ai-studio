@@ -1,8 +1,8 @@
 import NextAuth, { NextAuthOptions, User as NextAuthUser } from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 // Import other providers like Google, GitHub etc. if you plan to use them
 // import GoogleProvider from "next-auth/providers/google";
-
 // --- FOR PRODUCTION: UNCOMMENT AND CONFIGURE PRISMA ADAPTER ---
 // import { PrismaAdapter } from "@next-auth/prisma-adapter";
 // import { PrismaClient } from "@prisma/client"; // Or your specific prisma client path
