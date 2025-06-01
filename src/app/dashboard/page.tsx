@@ -1,21 +1,15 @@
-done
-
-Machine
-Great! Now here's the thirteenth file:
-
-File 13: src/app/dashboard/page.tsx
 "use client";
 
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; // Not used directly, can be removed if not needed for layout
 import { Badge } from "@/components/ui/badge";
-import { 
-  Send, 
-  Image as ImageIcon, 
-  Music, 
-  Video, 
-  Code, 
+import {
+  Send,
+  Image as ImageIcon,
+  Music,
+  Video,
+  Code,
   FileText,
   Download,
   Copy,
@@ -35,7 +29,7 @@ interface Message {
   timestamp: Date;
 }
 
-export default function Dashboard() {
+export default function DashboardPage() { // Renamed to avoid conflict if 'Dashboard' is a component name
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -69,21 +63,50 @@ export default function Dashboard() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = input; // Capture input before clearing
     setInput("");
     setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiMessage: Message = {
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: currentInput, type: 'text' }) // Default to text for now, can be dynamic
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success && data.result) {
+        const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: data.result.content,
+          type: data.result.type as Message['type'],
+          metadata: data.result.metadata,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, aiMessage]);
+      } else {
+        throw new Error(data.error || "Failed to get a valid response from AI");
+      }
+
+    } catch (error) {
+      console.error("Failed to send message or get AI response:", error);
+      const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "I understand you want to create something amazing! Let me help you with that. What specific type of media would you like me to generate?",
+        content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : String(error)}`,
         type: "text",
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const quickActions = [
@@ -127,9 +150,8 @@ div
 div
 
 div
-          </div>
-        </div>
-        
+{/* Placeholder */} </div> </div>
+
 
 Button
       </div>
@@ -160,7 +182,7 @@ div
           </div>
         </div>
       ))}
-      
+
       {isLoading && (
         
 
@@ -190,6 +212,9 @@ div
 div
       </div>
     </div>
+  </div>
+</div>
+); }
   </div>
 </div>
 ); }
