@@ -173,3 +173,6 @@ Next.js team for the amazing framework
 Built with ❤️ by @Sm0ken42O
 
 Generate anything, create everything, no limits.
+git add .
+git commit -m "Trigger Vercel rebuild"
+git push origin main
